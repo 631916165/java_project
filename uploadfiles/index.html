@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>上传文件</title>
+</head>
+<body>
+    <h2>上传文件案例</h2>
+    <input type="file" id="fileInput">
+    <button onclick="uploadFile()">上传文件</button>
+    <div id="progress"></div>
+    <div id="response"></div>
+
+    <script>
+        function uploadFile() {
+            const fileInput = document.getElementById("fileInput");
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("请选择一个文件上传");
+                return;
+            }
+
+            const xhr = new XMLHttpRequest();
+            const formData = new FormData();
+            formData.append("file", file);
+
+            xhr.upload.addEventListener("progress", function(event) {
+                if (event.lengthComputable) {
+                    const progress = Math.round((event.loaded / event.total) * 100);
+                    document.getElementById("progress").innerHTML = `Uploading: ${progress}%`;
+                }
+            });
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        document.getElementById("progress").innerHTML = "";
+                        document.getElementById("response").innerHTML = xhr.responseText;
+                        console.log("文件上传成功")
+                    } else {
+                        console.error("文件上传失败");
+                    }
+                }
+            };
+
+            xhr.open("POST", "http://127.0.0.1/file/upload", true);
+            xhr.send(formData);
+            
+        }
+    </script>
+</body>
+</html>
